@@ -71,8 +71,6 @@ summary_data = pd.DataFrame(
 summary_data.to_csv("traffic_summary.csv", index=False)
 
 print("\nTraffic summary saved to traffic_summary.csv")
-
-
 # Plot clusters
 
 # Plot clusters
