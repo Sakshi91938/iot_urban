@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Urban Mobility Pattern Discovery & IoT Telemetry Intelligence Dashboard for Delhi NCR using DBSCAN clustering.">
+  <title>Urban Mobility Intelligence Platform | IoT & DBSCAN</title>
+
+  <!-- Typography: Inter for clean UI, JetBrains Mono for telemetry & coordinates -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS for Dark GIS Cartography -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- Chart.js for High-Precision Telemetry Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Enterprise Status Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-badge">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span class="brand-code">URBAN-IOT-DBSCAN</span>
+      </div>
+      <div>
+        <h1 class="platform-title">Urban Mobility Intelligence Platform</h1>
+        <div class="platform-sub">IoT Telemetry Ingestion • DBSCAN Spatial Pattern Discovery • Delhi NCR Arterial Corridors</div>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Health Bar -->
+    <div class="header-right">
+      <div class="system-status-indicator">
+        <span class="pulse-dot"></span>
+        <span class="status-text">INGESTION: ACTIVE</span>
+      </div>
+      <div class="telemetry-pill">
+        <span class="pill-label">MQTT:</span>
+        <span class="pill-val mono">urban_iot_project/traffic</span>
+      </div>
+      <div class="telemetry-pill">
+        <span class="pill-label">STORAGE:</span>
+        <span class="pill-val mono" id="header-db-status">PostgreSQL 43,440 Rows</span>
+      </div>
+      <div class="telemetry-pill clock-pill">
+        <span class="pill-label">IST:</span>
+        <span class="pill-val mono" id="live-clock">--:--:--</span>
+      </div>
+      <button id="btn-export-csv" class="btn btn-secondary btn-sm" title="Export CSV Audit Data">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Export
+      </button>
+    </div>
+  </header>
+
+  <!-- Executive Operational KPI Strip -->
+  <section class="kpi-grid">
+    <div class="kpi-card" id="kpi-records-card">
+      <div class="kpi-header">
+        <span class="kpi-label">INGESTED TELEMETRY</span>
+        <span class="kpi-sub">5-Min Windows</span>
+      </div>
+      <div class="kpi-value mono" id="kpi-total-records">43,440</div>
+      <div class="kpi-footer text-emerald">
+        <span class="indicator-icon">●</span> 100% Ingestion Integrity
+      </div>
+    </div>
+
+    <div class="kpi-card" id="kpi-zones-card">
+      <div class="kpi-header">
+        <span class="kpi-label">MONITORED CORRIDORS</span>
+        <span class="kpi-sub">Delhi NCR Grid</span>
+      </div>
+      <div class="kpi-value mono" id="kpi-active-zones">6 Zones</div>
+      <div class="kpi-footer text-sky">
+        <span class="indicator-icon">●</span> Active Sensor Arrays
+      </div>
+    </div>
+
+    <div class="kpi-card highlight-card" id="kpi-anomalies-card">
+      <div class="kpi-header">
+        <span class="kpi-label">DBSCAN ANOMALIES</span>
+        <span class="kpi-sub">Cluster -1 Outliers</span>
+      </div>
+      <div class="kpi-value mono text-rose" id="kpi-anomalies">7 Events</div>
+      <div class="kpi-footer text-rose">
+        <span class="indicator-icon">▲</span> Critical Bottlenecks Isolated
+      </div>
+    </div>
+
+    <div class="kpi-card" id="kpi-queue-card">
+      <div class="kpi-header">
+        <span class="kpi-label">AVG QUEUE DENSITY</span>
+        <span class="kpi-sub">Normalized (0.0 - 1.0)</span>
+      </div>
+      <div class="kpi-value mono" id="kpi-mean-queue">0.4541</div>
+      <div class="kpi-footer text-amber">
+        <span class="indicator-icon">■</span> Peak Recorded: <strong id="kpi-max-queue">0.9476</strong>
+      </div>
+    </div>
+
+    <div class="kpi-card" id="kpi-stop-card">
+      <div class="kpi-header">
+        <span class="kpi-label">AVG STOP DENSITY</span>
+        <span class="kpi-sub">Stop-and-Go Friction</span>
+      </div>
+      <div class="kpi-value mono" id="kpi-mean-stop">0.3305</div>
+      <div class="kpi-footer text-amber">
+        <span class="indicator-icon">■</span> Peak Recorded: <strong id="kpi-max-stop">0.8580</strong>
+      </div>
+    </div>
+
+    <div class="kpi-card" id="kpi-speed-card">
+      <div class="kpi-header">
+        <span class="kpi-label">FLEET PROBE SPEED</span>
+        <span class="kpi-sub">Spatial GPS Clusters</span>
+      </div>
+      <div class="kpi-value mono text-emerald" id="kpi-fleet-speed">46.8 km/h</div>
+      <div class="kpi-footer text-emerald">
+        <span class="indicator-icon">●</span> 3 Spatial Clusters Detected
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace Tabs -->
+  <main class="workspace-container">
+    <nav class="tab-navigation">
+      <button class="nav-tab active" data-tab="tab-map">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+        Geospatial GIS Map
+      </button>
+      <button class="nav-tab" data-tab="tab-analytics">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        Diurnal Dynamics & Corridors
+      </button>
+      <button class="nav-tab" data-tab="tab-dbscan">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        DBSCAN Anomaly Studio
+      </button>
+      <button class="nav-tab" data-tab="tab-stream">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        IoT Telemetry Stream
+      </button>
+    </nav>
+
+    <!-- TAB 1: GEOSPATIAL GIS MAP -->
+    <section id="tab-map" class="tab-panel active">
+      <div class="map-layout">
+        <!-- Leaflet Map Container -->
+        <div class="map-wrapper">
+          <div id="gis-map" class="map-canvas"></div>
+          
+          <!-- Map Legend Overlay -->
+          <div class="map-legend">
+            <div class="legend-title">GIS LAYER LEGEND</div>
+            <div class="legend-row">
+              <span class="legend-dot dot-critical"></span>
+              <span>Critical Bottleneck (Score &ge; 60)</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-dot dot-moderate"></span>
+              <span>Moderate Flow (Score 40-59)</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-dot dot-free"></span>
+              <span>Free Flow (Score &lt; 40)</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-dot dot-anomaly"></span>
+              <span>DBSCAN Anomaly (Cluster -1)</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-dot dot-gps"></span>
+              <span>Fleet GPS Probe Cluster</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Corridor Detail Sidebar -->
+        <aside class="corridor-sidebar">
+          <div class="sidebar-header">
+            <h3>Delhi Urban Corridors</h3>
+            <span class="badge badge-subtle">6 Monitored</span>
+          </div>
+
+          <div class="corridor-list" id="corridor-list-container">
+            <!-- Dynamic Corridor Cards injected by JS -->
+            <div class="loading-state">Loading corridor telemetry...</div>
+          </div>
+
+          <!-- Micro-Mobility Spatial Clusters Section -->
+          <div class="micro-clusters-panel">
+            <div class="sidebar-header">
+              <h4>Spatial Vehicle Clusters</h4>
+              <span class="badge badge-sky">DBSCAN GPS</span>
+            </div>
+            <div id="vehicle-clusters-container">
+              <!-- Dynamic GPS clusters injected by JS -->
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- TAB 2: DIURNAL DYNAMICS & CORRIDORS -->
+    <section id="tab-analytics" class="tab-panel">
+      <div class="analytics-grid">
+        <!-- 24-Hour Diurnal Congestion Chart -->
+        <div class="panel-card chart-card-wide">
+          <div class="card-header">
+            <div>
+              <h3>24-Hour Network Diurnal Congestion Curve</h3>
+              <p class="card-desc">Hourly aggregate of Queue Density ($K_q$) and Stop Density ($K_s$) revealing rush-hour peaks</p>
+            </div>
+            <div class="card-tags">
+              <span class="badge badge-amber">Morning Peak: 08:30 - 10:30</span>
+              <span class="badge badge-rose">Evening Peak: 16:30 - 19:30</span>
+            </div>
+          </div>
+          <div class="chart-container" style="height: 320px;">
+            <canvas id="diurnalChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Corridor Density Comparative Bar Chart -->
+        <div class="panel-card">
+          <div class="card-header">
+            <div>
+              <h3>Corridor Density Profile</h3>
+              <p class="card-desc">Mean Queue vs Stop Density across all 6 Delhi Zones</p>
+            </div>
+          </div>
+          <div class="chart-container" style="height: 280px;">
+            <canvas id="corridorBarChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Queue Density vs Stop Density Phase Scatter Plot -->
+        <div class="panel-card">
+          <div class="card-header">
+            <div>
+              <h3>Queue vs Stop Density Phase Space</h3>
+              <p class="card-desc">Scatter sampling showing linear laminar flow vs non-linear bottleneck divergence</p>
+            </div>
+          </div>
+          <div class="chart-container" style="height: 280px;">
+            <canvas id="phaseScatterChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: DBSCAN ANOMALY INTELLIGENCE STUDIO -->
+    <section id="tab-dbscan" class="tab-panel">
+      <div class="dbscan-studio-grid">
+        <!-- Interactive Parameter Tuning Workbench -->
+        <div class="panel-card dbscan-controls-card">
+          <div class="card-header">
+            <div>
+              <h3>DBSCAN Clustering Hyperparameter Studio</h3>
+              <p class="card-desc">Execute on-the-fly density-based spatial clustering of applications with noise</p>
+            </div>
+          </div>
+
+          <div class="controls-form">
+            <div class="control-group">
+              <div class="control-header">
+                <label for="slider-eps">Epsilon ($\epsilon$) Neighborhood Radius:</label>
+                <span class="control-value mono" id="val-eps">0.35</span>
+              </div>
+              <input type="range" id="slider-eps" min="0.10" max="0.90" step="0.05" value="0.35">
+              <span class="control-hint">Defines maximum distance between two samples for one to be considered as in the neighborhood of the other.</span>
+            </div>
+
+            <div class="control-group">
+              <div class="control-header">
+                <label for="slider-min-samples">Min Samples ($\text{MinPts}$):</label>
+                <span class="control-value mono" id="val-min-samples">10</span>
+              </div>
+              <input type="range" id="slider-min-samples" min="3" max="25" step="1" value="10">
+              <span class="control-hint">Minimum number of samples in a neighborhood for a point to be classified as a core point.</span>
+            </div>
+
+            <div class="control-actions">
+              <button id="btn-run-dbscan" class="btn btn-primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Recompute DBSCAN Clustering
+              </button>
+              <button id="btn-reset-dbscan" class="btn btn-secondary">Reset Defaults</button>
+            </div>
+          </div>
+
+          <!-- Studio Run Diagnostic Metric Badges -->
+          <div class="studio-diagnostics" id="dbscan-results-box">
+            <div class="diag-metric">
+              <span class="diag-label">Execution Time</span>
+              <span class="diag-val mono" id="dbscan-elapsed">-- ms</span>
+            </div>
+            <div class="diag-metric">
+              <span class="diag-label">Clusters Identified</span>
+              <span class="diag-val mono text-sky" id="dbscan-num-clusters">1 (Global Flow)</span>
+            </div>
+            <div class="diag-metric">
+              <span class="diag-label">Anomalies Isolated</span>
+              <span class="diag-val mono text-rose" id="dbscan-anomaly-count">7 Outliers</span>
+            </div>
+            <div class="diag-metric">
+              <span class="diag-label">Anomaly Proportion</span>
+              <span class="diag-val mono" id="dbscan-anomaly-pct">0.016%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Anomaly Incident Registry Table -->
+        <div class="panel-card dbscan-table-card">
+          <div class="card-header">
+            <div>
+              <h3>Detected Traffic Breakdown Incidents (Noise / Cluster -1)</h3>
+              <p class="card-desc">Anomalous sensor readings identified where density drastically departed from normal flow</p>
+            </div>
+            <span class="badge badge-rose" id="anomaly-table-badge">7 Incidents Verified</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" id="anomalies-table">
+              <thead>
+                <tr>
+                  <th>Incident ID</th>
+                  <th>Timestamp (IST)</th>
+                  <th>Corridor</th>
+                  <th>Queue Density ($K_q$)</th>
+                  <th>Stop Density ($K_s$)</th>
+                  <th>Severity Score</th>
+                  <th>Operational Classification</th>
+                </tr>
+              </thead>
+              <tbody id="anomalies-table-body">
+                <tr><td colspan="7" class="text-center">Loading anomaly incident registry...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: IOT TELEMETRY PIPELINE STREAM -->
+    <section id="tab-stream" class="tab-panel">
+      <div class="stream-layout">
+        <!-- Stream Controls & Ingestion Status -->
+        <div class="panel-card stream-controls-panel">
+          <div class="card-header">
+            <div>
+              <h3>IoT MQTT Pipeline Simulator</h3>
+              <p class="card-desc">Real-time telemetry packet ingestion over topic: <code>urban_iot_project/traffic</code></p>
+            </div>
+            <div class="stream-state-badge" id="stream-state-indicator">
+              <span class="pulse-dot"></span> STREAM PAUSED
+            </div>
+          </div>
+
+          <div class="stream-actions-bar">
+            <button id="btn-toggle-stream" class="btn btn-primary">
+              <span id="stream-btn-icon">▶</span>
+              <span id="stream-btn-text">Start Telemetry Stream</span>
+            </button>
+            <button id="btn-step-stream" class="btn btn-secondary">
+              Single Step Packet
+            </button>
+            <div class="stream-speed-selector">
+              <label>Stream Velocity:</label>
+              <select id="select-stream-speed" class="form-select">
+                <option value="1000">1x (1.0 sec/pkt)</option>
+                <option value="500">2x (0.5 sec/pkt)</option>
+                <option value="200" selected>5x (0.2 sec/pkt)</option>
+                <option value="50">20x (Fast Ingestion)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="stream-stats-bar">
+            <div class="stat-item">
+              <span class="stat-label">Packets Processed:</span>
+              <span class="stat-val mono" id="stream-pkt-count">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Ingestion Rate:</span>
+              <span class="stat-val mono" id="stream-rate">0 pkt/s</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">MQTT QoS:</span>
+              <span class="stat-val mono">Level 1 (At Least Once)</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Broker Link:</span>
+              <span class="stat-val mono text-emerald">SYNCHRONIZED</span>
+            </div>
+          </div>
+
+          <!-- Raw Live Packet Inspector -->
+          <div class="packet-inspector">
+            <div class="inspector-header">
+              <span>LATEST INCOMING TELEMETRY FRAME (JSON)</span>
+              <span class="mono" id="inspector-pkt-id">PKT-READY</span>
+            </div>
+            <pre class="json-viewer mono" id="raw-json-viewer">{
+  "status": "Ready to receive telemetry stream...",
+  "topic": "urban_iot_project/traffic",
+  "broker": "MQTT-UrbanIoT-Gateway"
+}</pre>
+          </div>
+        </div>
+
+        <!-- Live Telemetry Packet Feed Ticker -->
+        <div class="panel-card stream-feed-panel">
+          <div class="card-header">
+            <div>
+              <h3>Live Telemetry Feed Log</h3>
+              <p class="card-desc">Chronological sequence of incoming corridor sensor packets</p>
+            </div>
+            <button id="btn-clear-feed" class="btn btn-secondary btn-sm">Clear Log</button>
+          </div>
+
+          <div class="feed-log-container" id="stream-feed-log">
+            <!-- Packets prepended dynamically -->
+            <div class="empty-feed-hint">Click "Start Telemetry Stream" or "Single Step Packet" to begin ingesting live sensor frames.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Technical System Footer -->
+  <footer class="app-footer">
+    <div class="footer-left">
+      <span>URBAN MOBILITY PATTERN DISCOVERY SYSTEM</span>
+      <span class="footer-divider">•</span>
+      <span>IoT Stack: Paho-MQTT • PostgreSQL (urban_mobility) • Python Scikit-Learn DBSCAN</span>
+    </div>
+    <div class="footer-right mono">
+      <span>Geo-CRS: EPSG:4326 (WGS 84)</span>
+      <span class="footer-divider">•</span>
+      <span>Cluster Model: DBSCAN(eps=0.35, min_samples=10)</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

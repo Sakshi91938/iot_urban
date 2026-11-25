@@ -1,0 +1,13 @@
+# Fixed tech stack from roadmap.md
+paho-mqtt>=2.0.0,<3.0.0
+psycopg2-binary>=2.9.9
+pandas>=2.0.0,<3.0.0
+numpy>=1.24.0,<2.0.0
+scikit-learn>=1.3.0,<1.6.0
+streamlit>=1.30.0
+altair>=5.0.0
+python-dotenv>=1.0.0
+
+# Testing and Code Quality
+pytest>=7.4.0
+ruff>=0.1.0

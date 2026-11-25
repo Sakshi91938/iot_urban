@@ -1,0 +1,41 @@
+# Environment variables and secrets
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Raw dataset (Never committed)
+data/raw/
+*.zip
+*.csv
+
+# Testing and code quality
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Containers & OS
+.docker/
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Legacy prototype archive
+legacy_prototype/
+archive_prototype/

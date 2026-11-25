@@ -1,0 +1,347 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "System Overview & Telemetry Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": "PostgreSQL",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "#2b5c8f" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#2b5c8f", "value": null }] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT COUNT(*) as \"Total Telemetry Observations\" FROM traffic_telemetry;",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Telemetry Observations",
+      "type": "stat"
+    },
+    {
+      "datasource": "PostgreSQL",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "#2b5c8f" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#2b5c8f", "value": null }] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT num_clusters as \"Discovered Clusters\" FROM cluster_runs WHERE is_active = TRUE LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Active Mobility Clusters",
+      "type": "stat"
+    },
+    {
+      "datasource": "PostgreSQL",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "#d9534f" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#d9534f", "value": null }] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT noise_points as \"Noise Points (Anomalies)\" FROM cluster_runs WHERE is_active = TRUE LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Detected Traffic Anomalies",
+      "type": "stat"
+    },
+    {
+      "datasource": "PostgreSQL",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "#4a7c59" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#4a7c59", "value": null }] },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT noise_share as \"Anomaly Share (%)\" FROM cluster_runs WHERE is_active = TRUE LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Anomaly Share Ratio",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 101,
+      "title": "Mobility Patterns & Zone Analytics",
+      "type": "row"
+    },
+    {
+      "datasource": "PostgreSQL",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 5,
+      "options": {
+        "displayLabels": ["percent"],
+        "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] },
+        "pieType": "pie",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "tooltip": { "mode": "single", "sort": "none" }
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT cluster_name as metric, COUNT(*) as value FROM v_active_telemetry_clusters GROUP BY cluster_name ORDER BY value DESC;",
+          "refId": "A"
+        }
+      ],
+      "title": "Mobility Cluster Distribution Breakdown",
+      "type": "piechart"
+    },
+    {
+      "datasource": "PostgreSQL",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Traffic Density Ratio (0.0 - 1.0)",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "lineWidth": 1
+          },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 6,
+      "options": {
+        "barRadius": 0.1,
+        "barWidth": 0.8,
+        "groupWidth": 0.7,
+        "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": { "mode": "single", "sort": "none" },
+        "xField": "Zone"
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT 'Zone ' || zone::text as \"Zone\", avg_queue_density as \"Avg Queue Density\", avg_stop_density as \"Avg Stop Density\", max_queue_density as \"Peak Queue Density\" FROM v_zone_summary ORDER BY zone ASC;",
+          "refId": "A"
+        }
+      ],
+      "title": "Zone-by-Zone Traffic Density Comparison",
+      "type": "barchart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 102,
+      "title": "Temporal Trends & Anomaly Detection",
+      "type": "row"
+    },
+    {
+      "datasource": "PostgreSQL",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Average Queue Density",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 15 },
+      "id": 7,
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "right", "showLegend": true },
+        "tooltip": { "mode": "single", "sort": "none" }
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT hour_of_day as \"Hour of Day (IST)\", cluster_name as \"Cluster\", avg_queue_density as \"Average Queue Density\" FROM v_hourly_cluster_profile ORDER BY hour_of_day ASC, cluster_id ASC;",
+          "refId": "A"
+        }
+      ],
+      "title": "Hourly Density Profile Across Mobility Clusters (24-Hour Cycle)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "PostgreSQL",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "align": "auto",
+            "cellOptions": { "type": "auto" },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 0.7 }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Queue Density" },
+            "properties": [{ "id": "custom.cellOptions", "value": { "mode": "gradient", "type": "color-background" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Stop Density" },
+            "properties": [{ "id": "custom.cellOptions", "value": { "mode": "gradient", "type": "color-background" } }]
+          }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "id": 8,
+      "options": {
+        "cellHeight": "sm",
+        "footer": { "countRows": false, "fields": "", "reducer": ["sum"], "show": false },
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "Timestamp (IST)" }]
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT ts as \"Timestamp (IST)\", 'Zone ' || zone::text as \"Zone\", queue_density as \"Queue Density\", stop_density as \"Stop Density\", hour_of_day as \"Hour\", day_name as \"Day\", day_type as \"Type\" FROM v_anomalies ORDER BY ts DESC LIMIT 100;",
+          "refId": "A"
+        }
+      ],
+      "title": "Detected Traffic Anomalies & Noise Log (DBSCAN cluster_id = -1)",
+      "type": "table"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "tags": ["urban-mobility", "traffic", "dbscan", "iot"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Urban Mobility Pattern Discovery & Anomaly Detection",
+  "uid": "urban-mobility-main",
+  "version": 1,
+  "weekStart": ""
+}
